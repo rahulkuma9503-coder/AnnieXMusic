@@ -1,13 +1,13 @@
 import asyncio
 import importlib
-import os  # <-- Add this import
-from threading import Thread  # <-- Add this import
+import os
 
+from aiohttp import web
 from pyrogram import idle
 from pytgcalls.exceptions import NoActiveGroupCall
 
 import config
-from ANNIEMUSIC import LOGGER, app, userbot
+from ANNIEMUSIC import LOGGER, app as annie_app, userbot
 from ANNIEMUSIC.core.call import JARVIS
 from ANNIEMUSIC.misc import sudo
 from ANNIEMUSIC.plugins import ALL_MODULES
@@ -15,10 +15,25 @@ from ANNIEMUSIC.utils.database import get_banned_users, get_gbanned
 from ANNIEMUSIC.utils.cookie_handler import fetch_and_store_cookies 
 from config import BANNED_USERS
 
-# Import Flask
-from flask import Flask  # <-- Add this import
+# Health check server
+async def health_check(request):
+    return web.Response(text="Annie Music Bot is Operational", status=200)
+
+async def start_web_server():
+    web_app = web.Application()
+    web_app.router.add_get('/', health_check)
+    runner = web.AppRunner(web_app)
+    await runner.setup()
+    port = int(os.environ.get("PORT", 5000))
+    site = web.TCPSite(runner, host='0.0.0.0', port=port)
+    await site.start()
+    LOGGER("HealthCheck").info(f"Health check server started on port {port}")
+    return runner
 
 async def init():
+    # Start the health check server
+    web_runner = await start_web_server()
+
     if (
         not config.STRING1
         and not config.STRING2
@@ -36,7 +51,6 @@ async def init():
     except Exception as e:
         LOGGER("ANNIEMUSIC").warning(f"⚠️ᴄᴏᴏᴋɪᴇ ᴇʀʀᴏʀ: {e}")
 
-
     await sudo()
 
     try:
@@ -49,7 +63,7 @@ async def init():
     except:
         pass
 
-    await app.start()
+    await annie_app.start()
     for all_module in ALL_MODULES:
         importlib.import_module("ANNIEMUSIC.plugins" + all_module)
 
@@ -72,27 +86,13 @@ async def init():
     LOGGER("ANNIEMUSIC").info(
         "\x41\x6e\x6e\x69\x65\x20\x4d\x75\x73\x69\x63\x20\x52\x6f\x62\x6f\x74\x20\x53\x74\x61\x72\x74\x65\x64\x20\x53\x75\x63\x63\x65\x73\x73\x66\x75\x6c\x6c\x79\x2e\x2e\x2e"
     )
-
-    # Start Flask server for health checks
-    port = int(os.environ.get("PORT", 5000))
-    app_flask = Flask(__name__)
-
-    @app_flask.route('/')
-    def health_check():
-        return "Annie Music Bot is Operational", 200
-
-    def run_flask():
-        app_flask.run(host='0.0.0.0', port=port, debug=False, use_reloader=False)
-
-    flask_thread = Thread(target=run_flask)
-    flask_thread.daemon = True
-    flask_thread.start()
-
     await idle()
-    await app.stop()
-    await userbot.stop()
-    LOGGER("ANNIEMUSIC").info("sᴛᴏᴘᴘɪɴɢ ᴀɴɴɪᴇ ᴍᴜsɪᴄ ʙᴏᴛ ...")
 
+    # Clean up after idle
+    await annie_app.stop()
+    await userbot.stop()
+    await web_runner.cleanup()
+    LOGGER("ANNIEMUSIC").info("sᴛᴏᴘᴘɪɴɢ ᴀɴɴɪᴇ ᴍᴜsɪᴄ ʙᴏᴛ ...")
 
 if __name__ == "__main__":
     asyncio.get_event_loop().run_until_complete(init())
