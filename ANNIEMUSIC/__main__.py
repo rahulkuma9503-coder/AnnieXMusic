@@ -1,5 +1,7 @@
 import asyncio
 import importlib
+import os  # <-- Add this import
+from threading import Thread  # <-- Add this import
 
 from pyrogram import idle
 from pytgcalls.exceptions import NoActiveGroupCall
@@ -13,6 +15,8 @@ from ANNIEMUSIC.utils.database import get_banned_users, get_gbanned
 from ANNIEMUSIC.utils.cookie_handler import fetch_and_store_cookies 
 from config import BANNED_USERS
 
+# Import Flask
+from flask import Flask  # <-- Add this import
 
 async def init():
     if (
@@ -68,6 +72,22 @@ async def init():
     LOGGER("ANNIEMUSIC").info(
         "\x41\x6e\x6e\x69\x65\x20\x4d\x75\x73\x69\x63\x20\x52\x6f\x62\x6f\x74\x20\x53\x74\x61\x72\x74\x65\x64\x20\x53\x75\x63\x63\x65\x73\x73\x66\x75\x6c\x6c\x79\x2e\x2e\x2e"
     )
+
+    # Start Flask server for health checks
+    port = int(os.environ.get("PORT", 5000))
+    app_flask = Flask(__name__)
+
+    @app_flask.route('/')
+    def health_check():
+        return "Annie Music Bot is Operational", 200
+
+    def run_flask():
+        app_flask.run(host='0.0.0.0', port=port, debug=False, use_reloader=False)
+
+    flask_thread = Thread(target=run_flask)
+    flask_thread.daemon = True
+    flask_thread.start()
+
     await idle()
     await app.stop()
     await userbot.stop()
