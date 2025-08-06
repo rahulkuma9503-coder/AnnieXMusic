@@ -6,15 +6,22 @@ from ANNIEMUSIC.misc import dbb, heroku
 
 from .logging import LOGGER
 
-dirr()
-git()
-dbb()
-heroku()
+# Initialize core components
+dirr()       # Directory setup
+git()        # Git version check
+dbb()        # Database setup
+heroku()     # Heroku config (if applicable)
 
+# Create bot instances
 app = JARVIS()
 userbot = Userbot()
 
+# Add this new function for health checks
+def check_health():
+    """Simple health check for Render"""
+    return "OK" if app and userbot else "Initializing"
 
+# Import platform APIs
 from .platforms import *
 
 Apple = AppleAPI()
@@ -24,3 +31,9 @@ Spotify = SpotifyAPI()
 Resso = RessoAPI()
 Telegram = TeleAPI()
 YouTube = YouTubeAPI()
+
+# Critical addition for Render port binding
+import os
+if os.getenv('RENDER'):
+    # Ensure immediate port binding happens first
+    from ANNIEMUSIC import immediate_port_binder
