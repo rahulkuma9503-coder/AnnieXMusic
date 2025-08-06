@@ -1,5 +1,9 @@
-# Add at the very top
+# MUST BE ABSOLUTE FIRST LINES
 import os
+os.environ["PYTHONUNBUFFERED"] = "1"
+import immediate_port_binder  # Starts port binding IMMEDIATELY
+
+# ... rest of your existing code ...
 os.environ["PYTHONUNBUFFERED"] = "1"  # Ensure logs are unbuffered
 
 # Import the health server to start it immediately
