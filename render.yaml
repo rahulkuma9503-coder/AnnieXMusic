@@ -1,7 +1,13 @@
+
 services:
   - type: web
     name: AnnieXMusic
     plan: free
     runtime: python
     buildCommand: pip install -r requirements.txt
-    startCommand: bash start
+    startCommand: python3 -m ANNIEMUSIC
+    envVars:
+      - key: PORT
+        value: 10000
+    healthCheckPath: /
+    healthCheckTimeoutSeconds: 15  # Increased timeout
