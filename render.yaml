@@ -1,9 +1,10 @@
 services:
   - type: web
     name: AnnieXMusic
-    plan: standard  # REQUIRED - free tier insufficient
+    plan: standard  # REQUIRED - free tier is too slow
     runtime: python
     buildCommand: |
+        pip install --upgrade pip
         pip install -r requirements.txt
     startCommand: python3 -m ANNIEMUSIC
     envVars:
@@ -12,4 +13,5 @@ services:
       - key: PYTHONUNBUFFERED
         value: 1
     healthCheckPath: /
-    healthCheckTimeoutSeconds: 45
+    healthCheckTimeoutSeconds: 60  # Extended timeout
+    autoDeploy: true
