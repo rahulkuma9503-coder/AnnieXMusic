@@ -11,4 +11,8 @@ COPY . .
 RUN pip3 install --no-cache-dir --upgrade pip \
     && pip3 install --no-cache-dir --upgrade -r requirements.txt
 
+# Add this to your Dockerfile if exists
+HEALTHCHECK --interval=30s --timeout=10s \
+  CMD curl -f http://localhost:$PORT/ || exit 1
+
 CMD bash start
