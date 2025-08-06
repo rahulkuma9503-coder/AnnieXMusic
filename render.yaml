@@ -1,13 +1,12 @@
-
 services:
   - type: web
     name: AnnieXMusic
-    plan: free
+    plan: standard  # Free tier has only 512MB RAM [citation:1]
     runtime: python
     buildCommand: pip install -r requirements.txt
     startCommand: python3 -m ANNIEMUSIC
     envVars:
       - key: PORT
-        value: 10000
+        value: 10000  # Render's default port [citation:3]
     healthCheckPath: /
-    healthCheckTimeoutSeconds: 15  # Increased timeout
+    healthCheckTimeoutSeconds: 45  # Increased timeout [citation:1]
