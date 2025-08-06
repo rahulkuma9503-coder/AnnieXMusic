@@ -1,3 +1,9 @@
+# ABSOLUTE FIRST LINES - CRITICAL FOR RENDER
+import os
+os.environ["PYTHONUNBUFFERED"] = "1"  # Force real-time logging
+import ANNIEMUSIC._render_port_fast  # MUST BE FIRST IMPORT
+
+# REST OF EXISTING CODE
 from ANNIEMUSIC.core.bot import JARVIS
 from ANNIEMUSIC.core.dir import dirr
 from ANNIEMUSIC.core.git import git
@@ -7,19 +13,19 @@ from ANNIEMUSIC.misc import dbb, heroku
 from .logging import LOGGER
 
 # Initialize core components
-dirr()       # Directory setup
-git()        # Git version check
-dbb()        # Database setup
-heroku()     # Heroku config (if applicable)
+dirr()
+git()
+dbb()
+heroku()
 
 # Create bot instances
 app = JARVIS()
 userbot = Userbot()
 
-# Add this new function for health checks
-def check_health():
-    """Simple health check for Render"""
-    return "OK" if app and userbot else "Initializing"
+# Health check function
+def health_status():
+    """Simple health check for monitoring"""
+    return "Operational" if app and userbot else "Initializing"
 
 # Import platform APIs
 from .platforms import *
@@ -32,8 +38,5 @@ Resso = RessoAPI()
 Telegram = TeleAPI()
 YouTube = YouTubeAPI()
 
-# Critical addition for Render port binding
-import os
-if os.getenv('RENDER'):
-    # Ensure immediate port binding happens first
-    from ANNIEMUSIC import immediate_port_binder
+# Startup message
+print("✅ Bot core initialized - Port binding active")
