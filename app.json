@@ -51,7 +51,7 @@
     "COOKIE_URL": {
       "description": "Direct raw link (from Batbin or Pastebin) to your YouTube cookies.txt file for better download support.",
       "required": true,
-      "value": "https://batbin.me/ablauts"
+      "value": ""
     },
     "API_URL": {
       "description": "(Optional) URL of a custom API server used for music downloads or other services.",
