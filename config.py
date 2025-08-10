@@ -50,7 +50,7 @@ SUPPORT_CHANNEL = getenv("SUPPORT_CHANNEL", "https://t.me/save_restricted_conten
 SUPPORT_CHAT = getenv("SUPPORT_CHAT", "https://t.me/team_secrat_bots")
 
 # ───── Assistant Auto Leave ───── #
-AUTO_LEAVING_ASSISTANT = False
+AUTO_LEAVING_ASSISTANT = True
 AUTO_LEAVE_ASSISTANT_TIME = int(getenv("ASSISTANT_LEAVE_TIME", "11500"))
 
 # ───── Error Handling ───── #
